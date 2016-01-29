@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 set -e
 
@@ -12,6 +12,20 @@ REFRESH=${REFRESH:-60}
 RETRY=${RETRY:-5}
 EXPIRE=${EXPIRE:-300}
 MINIMUM=${MINIMUM:-10}
+
+cp /dev/null /etc/bind/named.conf.local
+
+cat <<'DATA' > /etc/bind/named.conf.options
+options {
+  directory "/var/cache/bind";
+
+  recursion yes;
+  allow-recursion { any; };
+
+  dnssec-validation no;
+  auth-nxdomain no;
+};
+DATA
 
 create_zone() {
   zone=$1
@@ -33,24 +47,10 @@ zone "${zone}" {
 DATA
 }
 
-cat <<'DATA' > /etc/bind/named.conf.options
-options {
-  directory "/var/cache/bind";
-
-  recursion yes;
-  allow-recursion { any; };
-
-  dnssec-validation no;
-  auth-nxdomain no;
-};
-DATA
-
-rm /etc/bind/named.conf.local
-
-while (( $# > 0 )); do
+while [ "$1" ]; do
   case $1 in
     --zone)
-      if [[ ! $2 ]]; then
+      if [ ! "$2" ]; then
         echo "--zone not specified ZONE" >&2
         exit 1
       fi
@@ -66,7 +66,7 @@ while (( $# > 0 )); do
   shift
 done
 
-if [[ $1 = "" ]]; then
+if [ "$1" = "" ]; then
   exec /usr/sbin/named -c /etc/bind/named.conf -f
 fi
 

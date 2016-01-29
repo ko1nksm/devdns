@@ -1,6 +1,9 @@
-FROM debian
+FROM alpine
 
-RUN apt-get -y update && apt-get -y install bind9
+RUN apk add --update bind && rm -rf /var/cache/apk/*
+
+# bind config are taken from the debian jessie.
+COPY bind /etc/bind
 
 COPY docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
