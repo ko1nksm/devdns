@@ -15,6 +15,10 @@ MINIMUM=${MINIMUM:-10}
 
 cp /dev/null /etc/bind/named.conf.local
 
+if [ ! -d /var/cache/bind ]; then
+  mkdir -p /var/cache/bind
+fi
+
 cat <<'DATA' > /etc/bind/named.conf.options
 options {
   directory "/var/cache/bind";
