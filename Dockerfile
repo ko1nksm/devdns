@@ -1,4 +1,5 @@
 FROM alpine
+MAINTAINER Koichi Nakashima <koichi@nksm.name>
 
 RUN apk add --update bind && rm -rf /var/cache/apk/*
 
